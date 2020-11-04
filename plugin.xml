@@ -3,12 +3,12 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-apple-wallet" version="1.0.0">
 
     <name>AppleWallet</name>
-    <description>This plugin allows you to add passes and credit cards to Apple Wallet</description>
+    <description>This plugin allows you to add passes and credit/debit cards to Apple Wallet</description>
     <author>TOoma | Designes</author>
     <keywords>Apple,Wallet,iOS</keywords>
     <license>Apache 2.0</license>
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
+        <engine name="cordova" version=">=9.0.0" />
     </engines>
 
     <!-- ios -->

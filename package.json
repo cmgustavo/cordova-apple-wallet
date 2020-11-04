@@ -1,16 +1,16 @@
 {
-  "name": "cordova-apple-wallet",
-  "version": "1.0.2",
-  "description": "This plugin allows you to add passes and credit cards to Apple Wallet",
+  "name": "cordova-apple-wallet-ng",
+  "version": "1.0.1",
+  "description": "This plugin allows you to add passes and credit/debit cards to Apple Wallet",
   "cordova": {
-    "id": "cordova-apple-wallet",
+    "id": "cordova-apple-wallet-ng",
     "platforms": [
       "ios"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tomavic/cordova-apple-wallet.git"
+    "url": "git+https://github.com/cmgustavo/cordova-apple-wallet.git"
   },
   "keywords": [
     "ecosystem:cordova",
@@ -20,7 +20,7 @@
   "author": "TOoma | Designes",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/tomavic/cordova-apple-wallet/issues"
+    "url": "https://github.com/cmgustavo/cordova-apple-wallet/issues"
   },
-  "homepage": "https://github.com/tomavic/cordova-apple-wallet#readme"
+  "homepage": "https://github.com/cmgustavo/cordova-apple-wallet"
 }

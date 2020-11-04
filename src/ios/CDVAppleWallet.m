@@ -54,7 +54,8 @@ typedef void (^completionHand)(PKAddPaymentPassRequest *request);
         // Options
         NSDictionary* options = [arguments objectAtIndex:0]; 
         
-        PKAddPaymentPassRequestConfiguration* configuration = [[PKAddPaymentPassRequestConfiguration alloc] initWithEncryptionScheme:PKEncryptionSchemeRSA_V2];
+        // Force ECC_V2 encryption scheme
+        PKAddPaymentPassRequestConfiguration* configuration = [[PKAddPaymentPassRequestConfiguration alloc] initWithEncryptionScheme:PKEncryptionSchemeECC_V2];
         
         // The name of the person the card is issued to
         configuration.cardholderName = [options objectForKey:@"cardholderName"];
