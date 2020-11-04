@@ -1,6 +1,10 @@
-# cordova-apple-wallet
+# cordova-apple-wallet-ng
 
 This plugin provides support for adding your credit/debit cards to Apple Wallet
+
+### Changelog
+
+* v1.0.2: Adds ECC_V2 encryption scheme.
 
 
 ### Important
