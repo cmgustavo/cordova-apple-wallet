@@ -4,7 +4,9 @@ This plugin provides support for adding your credit/debit cards to Apple Wallet
 
 ### Changelog
 
-* v1.0.2: Adds ECC_V2 encryption scheme.
+* v1.0.3: Chore: fix name.
+* v1.0.2: Chore: fix name.
+* v1.0.1: Feature: adds ECC_V2 encryption scheme.
 
 
 ### Important
