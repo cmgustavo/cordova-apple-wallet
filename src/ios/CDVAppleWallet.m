@@ -168,12 +168,12 @@ typedef void (^completionHand)(PKAddPaymentPassRequest *request);
         
        NSString* activationData = [options objectForKey:@"activationData"];
        NSString* encryptedPassData = [options objectForKey:@"encryptedPassData"];
-       NSString* wrappedKey = [options objectForKey:@"wrappedKey"];
-        
+       NSString* ephemeralPublicKey = [options objectForKey:@"ephemeralPublicKey"];
+
         request.activationData = [activationData dataUsingEncoding:NSUTF8StringEncoding];
         request.encryptedPassData = [[NSData alloc] initWithBase64EncodedString:encryptedPassData options:0];
-        request.wrappedKey = [[NSData alloc] initWithBase64EncodedString:wrappedKey options:0];
-        
+        request.ephemeralPublicKey = [[NSData alloc] initWithBase64EncodedString:ephemeralPublicKey options:0];
+
         // Issue request
         self.completionHandler(request);
         
