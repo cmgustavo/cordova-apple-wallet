@@ -8,15 +8,17 @@
 #import <Cordova/CDV.h>
 #import <PassKit/PassKit.h>
 
-typedef void (^completionHand)(PKAddPaymentPassRequest *request);
+typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request);
 
 @interface AppleWallet()<PKAddPaymentPassViewControllerDelegate>
 
-@property (nonatomic, strong) completionHand completionHandler; 
-@property (nonatomic, strong) NSString* stringFromData; 
-@property (nonatomic, copy) NSString* transactionCallbackId; 
-@property (nonatomic, copy) NSString* completionCallbackId; 
-@property (nonatomic, retain) UIViewController* addPaymentPassModal; 
+@property (nonatomic, assign) BOOL isRequestIssued;
+@property (nonatomic, assign) BOOL isRequestIssuedSuccess;
+@property (nonatomic, strong) completedPaymentProcessHandler completionHandler;
+@property (nonatomic, strong) NSString* stringFromData;
+@property (nonatomic, copy) NSString* transactionCallbackId;
+@property (nonatomic, copy) NSString* completionCallbackId;
+@property (nonatomic, retain) UIViewController* addPaymentPassModal;
 
 
 @end
@@ -153,37 +155,70 @@ typedef void (^completionHand)(PKAddPaymentPassRequest *request);
 }
 
 
-- (void)completeAddPaymentPass:(CDVInvokedUrlCommand*)command
+- (void) completeAddPaymentPass:(CDVInvokedUrlCommand *)command
 {
     NSLog(@"LOG completeAddPaymentPass");
-    
-    CDVPluginResult* pluginResult;
+    CDVPluginResult *commandResult;
+
+    // Here to return a reasonable message after completeAddPaymentPass callback
+    if (self.isRequestIssued == true){
+        if (self.isRequestIssuedSuccess == false){
+            // Upcall with the data error
+            commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
+        }else{
+            // Upcall with the data success
+            commandResult= [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"success"];
+        }
+        [commandResult setKeepCallback:[NSNumber numberWithBool:YES]];
+        [self.commandDelegate sendPluginResult:commandResult callbackId:self.completionCallbackId];
+        return;
+    }
+
+    // CDVPluginResult* pluginResult;
     NSArray* arguments = command.arguments;
     if ([arguments count] != 1){
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"incorrect number of arguments"];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        // pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"incorrect number of arguments"];
+        // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
         PKAddPaymentPassRequest* request = [[PKAddPaymentPassRequest alloc] init];
-        NSDictionary* options = [arguments objectAtIndex:0];
-        
-       NSString* activationData = [options objectForKey:@"activationData"];
-       NSString* encryptedPassData = [options objectForKey:@"encryptedPassData"];
-       NSString* ephemeralPublicKey = [options objectForKey:@"ephemeralPublicKey"];
+                NSDictionary* options = [arguments objectAtIndex:0];
 
-        request.activationData = [activationData dataUsingEncoding:NSUTF8StringEncoding];
-        request.encryptedPassData = [[NSData alloc] initWithBase64EncodedString:encryptedPassData options:0];
-        request.ephemeralPublicKey = [[NSData alloc] initWithBase64EncodedString:ephemeralPublicKey options:0];
+                NSString* activationData = [options objectForKey:@"activationData"];
+                NSString* encryptedPassData = [options objectForKey:@"encryptedPassData"];
+                NSString* wrappedKey = [options objectForKey:@"wrappedKey"];
+                NSString* ephemeralPublicKey = [options objectForKey:@"ephemeralPublicKey"];
 
-        // Issue request
-        self.completionHandler(request);
-        
-        // Send result
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-        [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
-        self.completionCallbackId = command.callbackId;
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.completionCallbackId]; 
-        
-    } 
+                request.activationData = [[NSData alloc] initWithBase64EncodedString:activationData options:0]; //[activationData dataUsingEncoding:NSUTF8StringEncoding];
+                request.encryptedPassData = [[NSData alloc] initWithBase64EncodedString:encryptedPassData options:0];
+                if (wrappedKey) {
+                    request.wrappedKey = [[NSData alloc] initWithBase64EncodedString:wrappedKey options:0];
+                }
+                if (ephemeralPublicKey) {
+                    request.ephemeralPublicKey = [[NSData alloc] initWithBase64EncodedString:ephemeralPublicKey options:0];
+                }
+
+                // Issue request
+                self.completionHandler(request);
+                self.completionCallbackId = command.callbackId;
+                self.isRequestIssued = true;
+    }
+}
+
+- (NSData *)HexToNSData:(NSString *)hexString
+{
+    hexString = [hexString stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSMutableData *commandToSend= [[NSMutableData alloc] init];
+    unsigned char whole_byte;
+    char byte_chars[3] = {'\0','\0','\0'};
+    int i;
+    for (i=0; i < [hexString length]/2; i++) {
+        byte_chars[0] = [hexString characterAtIndex:i*2];
+        byte_chars[1] = [hexString characterAtIndex:i*2+1];
+        whole_byte = strtol(byte_chars, NULL, 16);
+        [commandToSend appendBytes:&whole_byte length:1];
+    }
+    NSLog(@"%@", commandToSend);
+    return commandToSend;
 }
 
 @end

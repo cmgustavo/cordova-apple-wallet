@@ -55,7 +55,7 @@ var AppleWallet = {
      * @param {Function} [errorCallback] - Optional error callback, recieves message object.
      * @returns {Promise}
      */
-    completeAddPaymentPass: function(someData, successCallback, errorCallback) {
+    completeAddPaymentPass: function(encCardData, successCallback, errorCallback) {
         return new Promise(function(resolve, reject) {
             exec(function(message) {
                 executeCallback(successCallback, message);
@@ -63,7 +63,7 @@ var AppleWallet = {
             }, function(message) {
                 executeCallback(errorCallback, message);
                 reject(message);
-            }, PLUGIN_NAME, 'completeAddPaymentPass', [someData]);
+            }, PLUGIN_NAME, 'completeAddPaymentPass', [encCardData]);
         });
     },
 }
