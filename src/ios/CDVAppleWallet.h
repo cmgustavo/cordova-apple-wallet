@@ -3,7 +3,10 @@
  * @author Hatem 
  * @header file
  */
+#import "Foundation/Foundation.h"
+#import "Cordova/CDV.h"
 #import <Cordova/CDVPlugin.h>
+#import <PassKit/PassKit.h>
 
 @interface AppleWallet : CDVPlugin
 
