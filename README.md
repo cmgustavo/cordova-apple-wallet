@@ -4,6 +4,7 @@ This plugin provides support for adding your credit/debit cards to Apple Wallet
 
 ### Changelog
 
+* v1.1.1: Update complete handler
 * v1.1.0: Changed wrapped to ephemeralPublicKey
 * v1.0.3: Chore: fix name.
 * v1.0.2: Chore: fix name.
