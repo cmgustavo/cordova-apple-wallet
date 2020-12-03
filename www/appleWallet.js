@@ -66,6 +66,18 @@ var AppleWallet = {
             }, PLUGIN_NAME, 'completeAddPaymentPass', [encCardData]);
         });
     },
+
+    checkPairedDevicesBySuffix: function(cardSuffix, successCallback, errorCallback) {
+        return new Promise(function(resolve, reject) {
+            exec(function(message) {
+                executeCallback(successCallback, message);
+                resolve(message);
+            }, function(message) {
+                executeCallback(errorCallback, message);
+                reject(message);
+            }, PLUGIN_NAME, 'checkPairedDevicesBySuffix', [cardSuffix]);
+        });
+    },
 }
 
 module.exports = AppleWallet;
