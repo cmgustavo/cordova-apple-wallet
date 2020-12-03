@@ -7,6 +7,8 @@
 #import "CDVAppleWallet.h"
 #import <Cordova/CDV.h>
 #import <PassKit/PassKit.h>
+#import <WatchConnectivity/WatchConnectivity.h>
+#import "AppDelegate.h"
 
 typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request);
 
@@ -39,8 +41,69 @@ typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request)
     [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
 }
 
+// Plugin Method - check paired devices By Suffix
+- (void)checkPairedDevicesBySuffix:(CDVInvokedUrlCommand *)command
+{
+    NSString * suffix = [command.arguments objectAtIndex:0];
+    NSMutableDictionary* dictionary = [[NSMutableDictionary alloc] init];
+    [dictionary setObject:@"False" forKey:@"isInWallet"];
+    [dictionary setObject:@"False" forKey:@"isInWatch"];
+    [dictionary setObject:@"" forKey:@"FPANID"];
+    PKPassLibrary *passLib = [[PKPassLibrary alloc] init];
 
-- (void)startAddPaymentPass:(CDVInvokedUrlCommand*)command 
+    // find if credit/debit card is exist in any pass container e.g. iPad
+    for (PKPaymentPass *pass in [passLib passesOfType:PKPassTypePayment]){
+        if ([pass.primaryAccountNumberSuffix isEqualToString:suffix]) {
+            [dictionary setObject:@"True" forKey:@"isInWallet"];
+            [dictionary setObject:pass.primaryAccountIdentifier forKey:@"FPANID"];
+            break;
+        }
+    }
+
+    // find if credit/debit card is exist in any remote pass container e.g. iWatch
+    for (PKPaymentPass *remotePass in [passLib remotePaymentPasses]){
+        if([remotePass.primaryAccountNumberSuffix isEqualToString:suffix]){
+            [dictionary setObject:@"True" forKey:@"isInWatch"];
+            [dictionary setObject:remotePass.primaryAccountIdentifier forKey:@"FPANID"];
+            break;
+        }
+    }
+
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dictionary];
+    [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (NSString *)getCardFPAN:(NSString *) cardSuffix{
+
+    PKPassLibrary *passLibrary = [[PKPassLibrary alloc] init];
+    NSArray<PKPass *> *paymentPasses = [passLibrary passesOfType:PKPassTypePayment];
+    for (PKPass *pass in paymentPasses) {
+        PKPaymentPass * paymentPass = [pass paymentPass];
+        if([[paymentPass primaryAccountNumberSuffix] isEqualToString:cardSuffix])
+            return [paymentPass primaryAccountIdentifier];
+    }
+
+    if (WCSession.isSupported) { // check if the device support to handle an Apple Watch
+        WCSession *session = [WCSession defaultSession];
+        [session setDelegate:self.appDelegate];
+        [session activateSession];
+
+        if ([session isPaired]) { // Check if the iPhone is paired with the Apple Watch
+            paymentPasses = [passLibrary remotePaymentPasses];
+            for (PKPass *pass in paymentPasses) {
+                PKPaymentPass * paymentPass = [pass paymentPass];
+                if([[paymentPass primaryAccountNumberSuffix] isEqualToString:cardSuffix])
+                    return [paymentPass primaryAccountIdentifier];
+            }
+        }
+    }
+
+    return nil;
+}
+
+
+- (void)startAddPaymentPass:(CDVInvokedUrlCommand*)command
 {
     NSLog(@"LOG start startAddPaymentPass");
     CDVPluginResult* pluginResult;
