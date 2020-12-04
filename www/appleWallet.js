@@ -66,6 +66,26 @@ var AppleWallet = {
             }, PLUGIN_NAME, 'completeAddPaymentPass', [encCardData]);
         });
     },
+
+    /**
+     * @function checkPairedDevicesBySuffix
+     * @description a function to check if there is any paired devices by suffix
+     * @param {String} [cardSuffix] - The card number suffix ex: last 4 or 6 digits
+     * @param {Function} [successCallback] - Optional success callback, recieves message object.
+     * @param {Function} [errorCallback] - Optional error callback, recieves message object.
+     * @returns {Promise<Object>} object contains boolean values that ensure that card is already exists in wallet or paired-watch
+     */
+    checkPairedDevicesBySuffix: function(cardSuffix, successCallback, errorCallback) {
+        return new Promise(function(resolve, reject) {
+            exec(function(message) {
+                executeCallback(successCallback, message);
+                resolve(message);
+            }, function(message) {
+                executeCallback(errorCallback, message);
+                reject(message);
+            }, PLUGIN_NAME, 'checkPairedDevicesBySuffix', [cardSuffix]);
+        });
+    }
 }
 
 module.exports = AppleWallet;

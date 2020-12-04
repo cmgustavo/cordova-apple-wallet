@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-apple-wallet-ng" version="1.1.1">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-apple-wallet-ng" version="1.2.0">
 
     <name>AppleWallet</name>
     <description>This plugin allows you to add passes and credit/debit cards to Apple Wallet</description>

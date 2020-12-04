@@ -4,12 +4,12 @@ This plugin provides support for adding your credit/debit cards to Apple Wallet
 
 ### Changelog
 
+* v1.2.0: Adds checkPairedDevicesBySuffix
 * v1.1.1: Update complete handler
 * v1.1.0: Changed wrapped to ephemeralPublicKey
 * v1.0.3: Chore: fix name.
 * v1.0.2: Chore: fix name.
 * v1.0.1: Feature: adds ECC_V2 encryption scheme.
-
 
 ### Important
 
@@ -17,11 +17,7 @@ This plugin provides support for adding your credit/debit cards to Apple Wallet
 
 # Installation
 
-    cordova plugin add cordova-apple-wallet --save
-
-Or the latest (unstable) version:
-
-    cordova plugin add --save https://github.com/tomavic/cordova-apple-wallet 
+    cordova plugin add cordova-apple-wallet-ng --save
 
 # Supported Platforms
 
@@ -34,8 +30,7 @@ Or the latest (unstable) version:
 
 In order to use it with Ionic 3, please follow this [instructions](https://ionicframework.com/docs/native/apple-wallet/)
 
-
-### Phonegap
+### Cordova
 
 In order to use it with normal cordova based project, please define a global variable, so that you can use it without lint errors
 

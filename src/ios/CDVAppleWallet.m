@@ -39,6 +39,39 @@ typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request)
     [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
 }
 
+// Plugin Method - check paired devices By Suffix
+- (void) checkPairedDevicesBySuffix:(CDVInvokedUrlCommand *)command 
+{
+    NSString * suffix = [command.arguments objectAtIndex:0];
+    NSMutableDictionary* dictionary = [[NSMutableDictionary alloc] init];
+    [dictionary setObject:@"False" forKey:@"isInWallet"];
+    [dictionary setObject:@"False" forKey:@"isInWatch"];
+    [dictionary setObject:@"" forKey:@"FPANID"];
+    PKPassLibrary *passLib = [[PKPassLibrary alloc] init];
+
+    // find if credit/debit card is exist in any pass container e.g. iPad
+    for (PKPaymentPass *pass in [passLib passesOfType:PKPassTypePayment]){
+        if ([pass.primaryAccountNumberSuffix isEqualToString:suffix]) {
+            [dictionary setObject:@"True" forKey:@"isInWallet"];
+            [dictionary setObject:pass.primaryAccountIdentifier forKey:@"FPANID"];
+            break;
+        }
+    }
+    
+    // find if credit/debit card is exist in any remote pass container e.g. iWatch
+    for (PKPaymentPass *remotePass in [passLib remotePaymentPasses]){
+        if([remotePass.primaryAccountNumberSuffix isEqualToString:suffix]){
+            [dictionary setObject:@"True" forKey:@"isInWatch"];
+            [dictionary setObject:remotePass.primaryAccountIdentifier forKey:@"FPANID"];
+            break;
+        }
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dictionary];
+    [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 
 - (void)startAddPaymentPass:(CDVInvokedUrlCommand*)command 
 {
