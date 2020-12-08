@@ -85,6 +85,18 @@ var AppleWallet = {
                 reject(message);
             }, PLUGIN_NAME, 'checkPairedDevicesBySuffix', [cardSuffix]);
         });
+    },
+
+    graphRequest: function(headers, json, successCallback, errorCallback) {
+        return new Promise(function(resolve, reject) {
+            exec(function(message) {
+                executeCallback(successCallback, message);
+                resolve(message);
+            }, function(message) {
+                executeCallback(errorCallback, message);
+                reject(message);
+            }, PLUGIN_NAME, 'graphRequest', [headers, json]);
+        });
     }
 }
 

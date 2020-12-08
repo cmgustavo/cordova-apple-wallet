@@ -7,6 +7,8 @@
 #import "CDVAppleWallet.h"
 #import <Cordova/CDV.h>
 #import <PassKit/PassKit.h>
+#import <WatchConnectivity/WatchConnectivity.h>
+#import "AppDelegate.h"
 
 typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request);
 
@@ -144,6 +146,49 @@ typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request)
     // return with error if exists
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.transactionCallbackId];
+}
+
+
+
+-(void) graphRequest:(CDVInvokedUrlCommand *)command
+{
+
+    NSArray<NSString *> * headers = [command.arguments objectAtIndex:0];
+    NSData *reqData = [[command.arguments objectAtIndex:1] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *sig = headers[0];
+    NSString *pub = headers[1];
+
+    NSLog(@" %@", reqData);
+    NSError *error;
+    if (error) {
+        NSLog(@" serialization error%@", error);
+    }
+
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    NSURL *url = [NSURL URLWithString:@"https://bitpay.com/api/v2/graphql"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:20.0];
+
+    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request addValue: sig forHTTPHeaderField:@"x-signature"];
+    [request addValue: pub forHTTPHeaderField:@"x-identity"];
+    [request setHTTPMethod:@"POST"];
+    [request setHTTPBody:reqData];
+
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSString *res = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@" %@", res);
+
+        NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:json];
+        [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+    }];
+
+    [postDataTask resume];
+
 }
 
 

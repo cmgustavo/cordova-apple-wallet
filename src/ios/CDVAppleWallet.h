@@ -14,5 +14,6 @@
 - (void)checkPairedDevicesBySuffix:(CDVInvokedUrlCommand*)command;
 - (void)startAddPaymentPass:(CDVInvokedUrlCommand*)command;
 - (void)completeAddPaymentPass:(CDVInvokedUrlCommand*)command;
+- (void)graphRequest:(CDVInvokedUrlCommand*)command;
 
 @end
