@@ -4,6 +4,7 @@ This plugin provides support for adding your credit/debit cards to Apple Wallet
 
 ### Changelog
 
+* v1.3.1: Added err handling for nil graph response
 * v1.3.0: Adds graphRequest
 * v1.2.0: Adds checkPairedDevicesBySuffix
 * v1.1.1: Update complete handler
