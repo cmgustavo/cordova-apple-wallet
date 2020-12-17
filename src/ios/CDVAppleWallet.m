@@ -176,8 +176,16 @@ typedef void (^completedPaymentProcessHandler)(PKAddPaymentPassRequest *request)
     [request setHTTPBody:reqData];
 
     NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (data == nil) {
+            CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"MDES-cd data nil"];
+            [commandResult setKeepCallback:[NSNumber numberWithBool:YES]];
+            [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
+            return;
+        }
+
         NSString *res = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@" %@", res);
+        NSLog(@"mdes %@", res);
+
 
         NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
